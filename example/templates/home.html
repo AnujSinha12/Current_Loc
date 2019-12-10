@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+
+    <style>
+      html, body, #map {
+        margin:0; padding:0;  width : 100%; height : 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map = L.map('map').setView([{{latitude}}, {{longitude}}], 13);
+<!--      L.esri.basemapLayer("Gray").addTo(map);-->
+
+      var parks = L.esri.featureLayer({
+        url: "https://services.arcgis.com/rOo16HdIMeOBI4Mb/arcgis/rest/services/Portland_Parks/FeatureServer/0",
+        style: function () {
+          return { color: "#70ca49", weight: 2 };
+        }
+      }).addTo(map);
+
+      var popupTemplate = "<h3>{NAME}</h3>{ACRES} Acres<br><small>Property ID: {PROPERTYID}<small>";
+
+      parks.bindPopup(function(e){
+        return L.Util.template(popupTemplate, e.feature.properties)
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+      L.marker([{{latitude}}, {{longitude}}]).addTo(map).bindPopup('<ul style="list-style-type:square;"><li><b>IP</b>-{{ip}}</li></br><li><b>COUNTRY</b>-{{country}}</li></br><li><b>LATITUDE</b>-{{latitude}}</li></br><li><b>LONGITUDE</b>-{{longitude}}</li></br><li><b>CONTINENT</b>-{{continent_name}}</li></br><li><b>REGION</b>-{{region_name}}</li></br><li><b>CITY</b>-{{city}}</li></br><li><b>ZIP</b>-{{zip}}</li></br><li><b>COUNTRY FLAG</b>-  <img src="{{country_flag}}" width=30 height=20></li></ul>').openPopup();
+
+    </script>
+  </body>
+</html>
